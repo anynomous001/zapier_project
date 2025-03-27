@@ -68,5 +68,4 @@ model ZapRunOutbox {
   id       String @id @default(cuid())
   zapRunId String @unique
   zapRun   ZapRun @relation(fields: [zapRunId], references: [id])
-  data     String
 }
