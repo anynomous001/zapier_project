@@ -37,11 +37,12 @@ model Trigger {
 }
 
 model Action {
-  id       String          @id @default(cuid())
-  zapId    String
-  actionId String
-  type     AvailableAction @relation(fields: [actionId], references: [id])
-  zap      Zap             @relation(fields: [zapId], references: [id])
+  id           String          @id @default(cuid())
+  zapId        String
+  actionId     String
+  type         AvailableAction @relation(fields: [actionId], references: [id])
+  zap          Zap             @relation(fields: [zapId], references: [id])
+  sortingOrder Int             @default(0)
 }
 
 model AvailableTrigger {

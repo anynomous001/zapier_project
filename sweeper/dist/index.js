@@ -14,7 +14,7 @@ const kafkajs_1 = require("kafkajs");
 const TOPIC_NAME = "zap-events";
 const client = new client_1.PrismaClient();
 const kafka = new kafkajs_1.Kafka({
-    clientId: 'outbox-processor',
+    clientId: 'outbox-sweeper',
     brokers: ['localhost:9092']
 });
 function main() {
@@ -26,7 +26,6 @@ function main() {
                 where: {},
                 take: 10
             });
-            console.log(pendingRows);
             producer.send({
                 topic: TOPIC_NAME,
                 messages: pendingRows.map(r => {
