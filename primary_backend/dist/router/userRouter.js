@@ -51,7 +51,7 @@ router.post('/signup', (req, res) => __awaiter(void 0, void 0, void 0, function*
             }
         });
         const token = jsonwebtoken_1.default.sign({ id: user.id }, process.env.JWT_SECRET);
-        res.status(200).send('User created' + token);
+        res.status(200).send({ user, token });
     }
     catch (error) {
         return res.status(403).json({
@@ -103,9 +103,9 @@ router.post('/signin', (req, res) => __awaiter(void 0, void 0, void 0, function*
         });
     }
 }));
-router.get('/user', auth_1.authmiddleware, (req, res) => {
-    const id = req.body.json().id;
-    const user = db_1.prisma.user.findFirst({
+router.get('/user', auth_1.authmiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const id = req.userId;
+    const user = yield db_1.prisma.user.findFirst({
         where: {
             id
         },
@@ -119,5 +119,5 @@ router.get('/user', auth_1.authmiddleware, (req, res) => {
         return res.status(404).json({ message: 'User not found' });
     }
     return res.status(200).json({ user });
-});
+}));
 exports.userRouter = router;

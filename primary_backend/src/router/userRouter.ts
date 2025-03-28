@@ -56,7 +56,7 @@ router.post('/signup', async (req: any, res: any) => {
         const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET as string)
 
 
-        res.status(200).send('User created' + token)
+        res.status(200).send({ user, token })
 
 
     } catch (error) {
@@ -121,11 +121,11 @@ router.post('/signin', async (req: any, res: any) => {
 
 
 })
-router.get('/user', authmiddleware, (req: any, res: any) => {
+router.get('/user', authmiddleware, async (req: any, res: any) => {
 
-    const id = req.body.json().id
+    const id = req.userId
 
-    const user = prisma.user.findFirst({
+    const user = await prisma.user.findFirst({
         where: {
             id
         },
@@ -143,8 +143,5 @@ router.get('/user', authmiddleware, (req: any, res: any) => {
     return res.status(200).json({ user })
 
 })
-
-
-
 
 export const userRouter = router

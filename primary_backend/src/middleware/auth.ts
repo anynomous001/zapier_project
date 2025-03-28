@@ -10,7 +10,7 @@ export const authmiddleware = async (req: any, res: any, next: any) => {
         return res.status(401).json({ message: 'No token provided' })
     }
 
-    const decodedUser = await verify(token, process.env.JWT_SECRET as string)
+    const decodedUser = verify(token, process.env.JWT_SECRET as string)
 
     if (!decodedUser || typeof decodedUser === 'string') {
         return res.status(403).json({ error: "User Does not Exist!" })
@@ -18,6 +18,6 @@ export const authmiddleware = async (req: any, res: any, next: any) => {
 
     res.set('userId', decodedUser.id);
 
+
     next()
 }
-// Compare this snippet from primary_backend/src/router/index.ts:

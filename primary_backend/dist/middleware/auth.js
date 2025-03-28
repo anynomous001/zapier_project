@@ -17,7 +17,7 @@ const authmiddleware = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
     if (!token) {
         return res.status(401).json({ message: 'No token provided' });
     }
-    const decodedUser = yield (0, jsonwebtoken_1.verify)(token, process.env.JWT_SECRET);
+    const decodedUser = (0, jsonwebtoken_1.verify)(token, process.env.JWT_SECRET);
     if (!decodedUser || typeof decodedUser === 'string') {
         return res.status(403).json({ error: "User Does not Exist!" });
     }
