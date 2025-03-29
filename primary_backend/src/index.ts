@@ -2,6 +2,8 @@ import express from 'express';
 import { userRouter } from './router/userRouter';
 import { zapRouter } from './router/zapRouter';
 import cors from 'cors';
+import { triggerRouter } from './router/triggerRouter';
+import { actionsRouter } from './router/actionsRouter';
 
 const app = express()
 const port = 3000
@@ -11,6 +13,8 @@ app.use(express.json())
 
 app.use('/api/v1/user', userRouter)
 app.use('/api/v1/zap', zapRouter)
+app.use('/api/v1/trigger', triggerRouter)
+app.use('/api/v1/actions', actionsRouter)
 
 
 app.listen(port, () => {

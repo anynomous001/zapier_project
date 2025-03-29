@@ -52,12 +52,14 @@ model AvailableTrigger {
   id       String    @id @default(cuid())
   name     String
   triggers Trigger[]
+  imageUrl String    @default("")
 }
 
 model AvailableAction {
-  id      String   @id @default(cuid())
-  name    String
-  actions Action[]
+  id       String   @id @default(cuid())
+  name     String
+  actions  Action[]
+  imageUrl String   @default("")
 }
 
 model ZapRun {
