@@ -5,6 +5,7 @@ import ZapsTable from '@/components/zapsTable'
 import { BACKEND_URL } from '@/config'
 import axios from 'axios'
 import React from 'react'
+import { useRouter } from 'next/navigation'
 
 
 export interface Zap {
@@ -65,6 +66,7 @@ const useZaps = () => {
 
 
 const page = () => {
+    const router = useRouter()
 
     const { loading, zaps, error } = useZaps()
 
@@ -75,13 +77,9 @@ const page = () => {
                     <div className='font-semibold text-3xl pb-4'>
                         Your Zaps
                     </div>
-                    <DarkButton size='big' onClick={async () => {
-                        const response = await axios.post(`${BACKEND_URL}/api/v1/zaps/zap/create`, {}, {
-                            headers: {
-                                "Authorization": `${localStorage.getItem("token")}`
-                            }
-                        })
-                        console.log(response.data)
+                    <DarkButton size='big' onClick={() => {
+                        router.push("/zap/create");
+
                     }}>
                         create
                     </DarkButton>
