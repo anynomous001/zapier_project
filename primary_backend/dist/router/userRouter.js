@@ -104,7 +104,8 @@ router.post('/signin', (req, res) => __awaiter(void 0, void 0, void 0, function*
     }
 }));
 router.get('/user', auth_1.authmiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const id = req.userId;
+    // @ts-ignore
+    const id = req.id;
     const user = yield db_1.prisma.user.findFirst({
         where: {
             id

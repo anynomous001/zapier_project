@@ -16,6 +16,7 @@ export const authmiddleware = async (req: any, res: any, next: any) => {
         return res.status(403).json({ error: "User Does not Exist!" })
     }
 
+    req.id = decodedUser.id
     res.set('userId', decodedUser.id);
 
 

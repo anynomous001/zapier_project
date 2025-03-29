@@ -21,8 +21,8 @@ const authmiddleware = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
     if (!decodedUser || typeof decodedUser === 'string') {
         return res.status(403).json({ error: "User Does not Exist!" });
     }
+    req.id = decodedUser.id;
     res.set('userId', decodedUser.id);
     next();
 });
 exports.authmiddleware = authmiddleware;
-// Compare this snippet from primary_backend/src/router/index.ts:

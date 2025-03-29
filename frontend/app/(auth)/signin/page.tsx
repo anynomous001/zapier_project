@@ -3,10 +3,15 @@ import { CheckFeature } from "@/components/checkFeature";
 import { Input } from "@/components/input";
 import { PrimaryButton } from "@/components/buttons/primarybutton";
 import { useRouter } from "next/navigation";
+import React from "react";
+import { BACKEND_URL } from "@/config";
+import axios from "axios";
 
 export default function () {
-
+    // const { user, loading } = useAuthContext();    
     const router = useRouter();
+    const [email, setEmail] = React.useState("");
+    const [password, setPassword] = React.useState("");
 
     return <div>
         <div className="flex justify-center">
@@ -26,14 +31,25 @@ export default function () {
                 </div>
                 <div className="flex-1 pt-6 pb-6 mt-12 px-4 border rounded">
                     <Input onChange={e => {
-                        console.log(e.target.value)
+                        setEmail(e.target.value)
                     }} label={"Email"} type="text" placeholder="Your Email"></Input>
                     <Input onChange={e => {
-                        console.log(e.target.value)
+                        setPassword(e.target.value)
                     }} label={"Password"} type="password" placeholder="Password"></Input>
                     <div className="pt-4">
                         <PrimaryButton onClick={async () => {
-                            router.push("/dashboard");
+                            try {
+                                const response = await axios.post(`${BACKEND_URL}/api/v1/user/signin`, {
+                                    email: email,
+                                    password: password
+                                })
+
+                                localStorage.setItem("token", response.data.token);
+                                router.push("/dashboard");
+                            } catch (error) {
+                                console.log(error);
+                            }
+
                         }} size="big">Login</PrimaryButton>
                     </div>
                 </div>

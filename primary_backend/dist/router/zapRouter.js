@@ -22,7 +22,8 @@ router.post('/', auth_1.authmiddleware, (req, res) => __awaiter(void 0, void 0, 
         return res.status(411).send({ error });
     }
     const response = yield db_1.prisma.$transaction((tx) => __awaiter(void 0, void 0, void 0, function* () {
-        const id = req.get('userId');
+        //@ts-ignore
+        const id = req.id;
         const zap = yield db_1.prisma.zap.create({
             data: {
                 userId: id,
@@ -53,7 +54,8 @@ router.post('/', auth_1.authmiddleware, (req, res) => __awaiter(void 0, void 0, 
     res.status(200).send({ success: true, response });
 }));
 router.get('/zaps', auth_1.authmiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const id = req.get('userId');
+    //@ts-ignore
+    const id = req.id;
     const zaps = yield db_1.prisma.zap.findMany({
         where: {
             userId: id,
@@ -75,7 +77,8 @@ router.get('/zaps', auth_1.authmiddleware, (req, res) => __awaiter(void 0, void 
 }));
 router.get('/:zapId', auth_1.authmiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const zapId = req.params.zapId;
-    const id = req.get('userId');
+    //@ts-ignore
+    const id = req.id;
     const zap = yield db_1.prisma.zap.findFirst({
         where: {
             id: zapId,
