@@ -43,6 +43,7 @@ const useZaps = () => {
 
     React.useEffect(() => {
         setLoading(true)
+        console.log(localStorage.getItem("token"))
         axios.get(`${BACKEND_URL}/api/v1/zap/zaps`, {
             headers: {
                 "Authorization": `${localStorage.getItem("token")}`

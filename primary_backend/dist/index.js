@@ -10,7 +10,7 @@ const cors_1 = __importDefault(require("cors"));
 const triggerRouter_1 = require("./router/triggerRouter");
 const actionsRouter_1 = require("./router/actionsRouter");
 const app = (0, express_1.default)();
-const port = 3000;
+const port = 3001;
 app.use((0, cors_1.default)());
 app.use(express_1.default.json());
 app.use('/api/v1/user', userRouter_1.userRouter);

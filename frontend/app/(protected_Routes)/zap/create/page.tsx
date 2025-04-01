@@ -10,10 +10,12 @@ interface availableActions {
     index: number
     id: string
     name: string
+    image: string
 }[]
 interface availabletrigger {
     id: string
     name: string
+    image: string
 }
 
 
@@ -78,17 +80,18 @@ const page = () => {
     return (
         <div className='flex bg-slate-200 h-screen w-[100vw] justify-center items-center'>
             <div className=' flex flex-col items-center space-y-4 w-[70%] justify-center rounded-lg shadow-lg p-5'>
-                <ZapCell onClick={() => setSelectedModalIndex(1)} index={1} name={selecetdTrigger?.name || "Trigger"} />
+                <ZapCell onClick={() => setSelectedModalIndex(1)} index={1} name={selecetdTrigger?.name || "Trigger"} image={selecetdTrigger?.image || ''} />
                 <div className='flex flex-col space-y-2'>
                     {
+
                         selectedActions.map((action, index) => {
                             return (
-                                <ZapCell onClick={() => setSelectedModalIndex(action.index)} key={index} index={action.index} name={action.name} />
+                                <ZapCell onClick={() => setSelectedModalIndex(action.index)} key={index} index={action.index} name={action.name} image={action?.image || ''} />
                             )
                         })
                     }
                     <LinkButton onClick={() => {
-                        setSelectedActions(a => [...a, { index: selectedActions.length + 2, id: 'actionId', name: 'Action' }])
+                        setSelectedActions(a => [...a, { index: selectedActions.length + 2, id: 'actionId', name: 'Action', image: '' }])
                     }} >
                         Add Action
                     </LinkButton>
@@ -97,18 +100,18 @@ const page = () => {
 
             </div>
 
-            {selectedModalIndex && <Modal loading={loading} availableItems={selectedModalIndex === 1 ? availableTriggers : availableActions} onSelect={(props: null | { name: string, id: string }) => {
+            {selectedModalIndex && <Modal loading={loading} availableItems={selectedModalIndex === 1 ? availableTriggers : availableActions} onSelect={(props: null | { name: string, id: string, image: string }) => {
                 if (props === null) {
                     setSelectedModalIndex(null)
                     return
                 }
                 if (selectedModalIndex === 1) {
-                    setSelectedTrigger({ id: props.id, name: props.name })
+                    setSelectedTrigger({ id: props.id, name: props.name, image: props.image })
                 }
-                else {
+                if (selectedModalIndex !== 1 && props !== null) {
                     setSelectedActions(a => {
                         const newActions = [...a]
-                        newActions[selectedModalIndex - 2] = { index: selectedModalIndex, name: props.name, id: props.id }
+                        newActions[selectedModalIndex - 2] = { index: selectedModalIndex, name: props.name, id: props.id, image: props.image }
                         return newActions
                     })
                 }
@@ -121,7 +124,7 @@ const page = () => {
 
 export default page
 
-const Modal = ({ index, onSelect, availableItems, loading }: { index: number, onSelect: (props: null | { name: string, id: string }) => void, loading: boolean, availableItems: { id: string, name: string, imageUrl: string }[] }) => {
+const Modal = ({ index, onSelect, availableItems, loading }: { index: number, onSelect: (props: null | { name: string, id: string, image: string }) => void, loading: boolean, availableItems: { id: string, name: string, imageUrl: string }[] }) => {
     console.log(availableItems)
 
     return (
@@ -151,7 +154,7 @@ const Modal = ({ index, onSelect, availableItems, loading }: { index: number, on
 
                                 : availableItems.map((item, index) => {
                                     return (
-                                        <div key={index} onClick={() => onSelect({ name: item.name, id: item.id })} className='flex my-2 bg-slate-600 hover:cursor-pointer w-[200px] justify-center px-7 py-5 space-x-2 items-center'>
+                                        <div key={index} onClick={() => onSelect({ name: item.name, id: item.id, image: item.imageUrl })} className='flex my-2 bg-slate-600 hover:cursor-pointer w-[200px] justify-center px-7 py-5 space-x-2 items-center'>
                                             <img src={item.imageUrl} alt={item.name} className='w-[30px] h-[30px]' />
                                             <span className='text-xl text-slate-50 '>{item.name}</span>
                                         </div>
