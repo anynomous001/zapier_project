@@ -19,7 +19,8 @@ export interface Zap {
         sortingOrder: number
         type: {
             id: string
-            name: string
+            name: string,
+            imageUrl: string
         }
     }[]
     trigger: {
@@ -29,6 +30,8 @@ export interface Zap {
         type: {
             id: string
             name: string
+            imageUrl: string
+
         }
     } | null
 }[]

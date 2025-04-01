@@ -10,6 +10,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
+import { BACKEND_URL } from '@/config'
 
 
 const ZapsTable = ({ zaps }: { zaps: Zap[] }) => {
@@ -22,6 +23,7 @@ const ZapsTable = ({ zaps }: { zaps: Zap[] }) => {
                         <TableHead className="w-[100px]">ZapId</TableHead>
                         <TableHead>UserId</TableHead>
                         <TableHead>Trigger</TableHead>
+                        <TableHead>Hook URL</TableHead>
                         <TableHead className="text-right">Action</TableHead>
                     </TableRow>
                 </TableHeader>
@@ -32,9 +34,13 @@ const ZapsTable = ({ zaps }: { zaps: Zap[] }) => {
                                 <TableCell className="font-medium">{zap.id}</TableCell>
                                 <TableCell>{zap.userId}</TableCell>
                                 <TableCell>{zap.trigger?.type.name || ''}</TableCell>
+                                <TableCell className='max-w-5xl text-wrap'>{`${BACKEND_URL}/hooks/catch/${zap.userId}/${zap.id}`}</TableCell>
                                 <TableCell className="text-right">{zap.actions.map((action, index) => {
                                     return (
                                         <div key={index}>
+                                            <div className=''>
+                                                <img className='h-[30px] w-[30px]' src={action.type.imageUrl} />
+                                            </div>
                                             {action.type.name}
                                         </div>
                                     )

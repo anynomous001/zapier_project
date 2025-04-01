@@ -1,9 +1,11 @@
 "use client"
 
 import { LinkButton } from '@/components/buttons/linkbutton'
+import { PrimaryButton } from '@/components/buttons/primarybutton'
 import ZapCell from '@/components/zapCell'
 import { BACKEND_URL } from '@/config'
 import axios from 'axios'
+import { useRouter } from 'next/navigation'
 import React from 'react'
 
 interface availableActions {
@@ -70,6 +72,7 @@ const useAvailableTriggersAndActions = () => {
 
 const page = () => {
 
+    const router = useRouter()
     const [selecetdTrigger, setSelectedTrigger] = React.useState<availabletrigger>()
     const [selectedActions, setSelectedActions] = React.useState<availableActions[]>([])
     const [selectedModalIndex, setSelectedModalIndex] = React.useState<number | null>(null)
@@ -78,47 +81,76 @@ const page = () => {
 
 
     return (
-        <div className='flex bg-slate-200 h-screen w-[100vw] justify-center items-center'>
-            <div className=' flex flex-col items-center space-y-4 w-[70%] justify-center rounded-lg shadow-lg p-5'>
-                <ZapCell onClick={() => setSelectedModalIndex(1)} index={1} name={selecetdTrigger?.name || "Trigger"} image={selecetdTrigger?.image || ''} />
-                <div className='flex flex-col space-y-2'>
-                    {
+        <div>
+            <PrimaryButton onClick={async () => {
+                if (!selecetdTrigger?.id) {
+                    return 'User has not selected trigger'
+                }
 
-                        selectedActions.map((action, index) => {
-                            return (
-                                <ZapCell onClick={() => setSelectedModalIndex(action.index)} key={index} index={action.index} name={action.name} image={action?.image || ''} />
-                            )
-                        })
-                    }
-                    <LinkButton onClick={() => {
-                        setSelectedActions(a => [...a, { index: selectedActions.length + 2, id: 'actionId', name: 'Action', image: '' }])
-                    }} >
-                        Add Action
-                    </LinkButton>
+                const response = await axios.post(`${BACKEND_URL}/api/v1/zap`, {
+                    availabletriggerId: selecetdTrigger?.id,
+                    triggerMetadata: {},
+                    actions: selectedActions.map(a => ({
+                        availableactionId: a.id,
+                        actionMetadata: {}
+                    }))
+
+
+                }, {
+                    headers: {
+                        "Authorization": localStorage.getItem("token")
+                    },
+                },
+                )
+
+                router.push('/dashboard')
+            }}
+            >
+                Create Zap
+            </PrimaryButton>
+            <div className='flex bg-slate-200 h-screen w-[100vw] justify-center items-center'>
+                <div className=' flex flex-col items-center space-y-4 w-[70%] justify-center rounded-lg shadow-lg p-5'>
+                    <ZapCell onClick={() => setSelectedModalIndex(1)} index={1} name={selecetdTrigger?.name || "Trigger"} image={selecetdTrigger?.image || ''} />
+                    <div className='flex flex-col space-y-2'>
+                        {
+
+                            selectedActions.map((action, index) => {
+                                return (
+                                    <ZapCell onClick={() => setSelectedModalIndex(action.index)} key={index} index={action.index} name={action.name} image={action?.image || ''} />
+                                )
+                            })
+                        }
+                        <LinkButton onClick={() => {
+                            setSelectedActions(a => [...a, { index: selectedActions.length + 2, id: 'actionId', name: 'Action', image: '' }])
+                        }} >
+                            Add Action
+                        </LinkButton>
+
+                    </div>
 
                 </div>
 
-            </div>
+                {selectedModalIndex && <Modal loading={loading} availableItems={selectedModalIndex === 1 ? availableTriggers : availableActions} onSelect={(props: null | { name: string, id: string, image: string }) => {
+                    if (props === null) {
+                        setSelectedModalIndex(null)
+                        return
+                    }
+                    if (selectedModalIndex === 1) {
+                        setSelectedTrigger({ id: props.id, name: props.name, image: props.image })
+                    }
+                    if (selectedModalIndex !== 1 && props !== null) {
+                        setSelectedActions(a => {
+                            const newActions = [...a]
+                            newActions[selectedModalIndex - 2] = { index: selectedModalIndex, name: props.name, id: props.id, image: props.image }
+                            return newActions
+                        })
+                    }
 
-            {selectedModalIndex && <Modal loading={loading} availableItems={selectedModalIndex === 1 ? availableTriggers : availableActions} onSelect={(props: null | { name: string, id: string, image: string }) => {
-                if (props === null) {
                     setSelectedModalIndex(null)
-                    return
-                }
-                if (selectedModalIndex === 1) {
-                    setSelectedTrigger({ id: props.id, name: props.name, image: props.image })
-                }
-                if (selectedModalIndex !== 1 && props !== null) {
-                    setSelectedActions(a => {
-                        const newActions = [...a]
-                        newActions[selectedModalIndex - 2] = { index: selectedModalIndex, name: props.name, id: props.id, image: props.image }
-                        return newActions
-                    })
-                }
-
-                setSelectedModalIndex(null)
-            }} index={selectedModalIndex} />}
+                }} index={selectedModalIndex} />}
+            </div >
         </div >
+
     )
 }
 
