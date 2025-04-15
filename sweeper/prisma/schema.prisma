@@ -18,6 +18,7 @@ model User {
   email    String @unique
   name     String
   password String
+  zaps     Zap[]
 }
 
 model Zap {
@@ -26,6 +27,8 @@ model Zap {
   trigger   Trigger?
   actions   Action[]
   zapRuns   ZapRun[]
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
 }
 
 model Trigger {
@@ -40,6 +43,7 @@ model Action {
   id           String          @id @default(cuid())
   zapId        String
   actionId     String
+  metadata     Json
   type         AvailableAction @relation(fields: [actionId], references: [id])
   zap          Zap             @relation(fields: [zapId], references: [id])
   sortingOrder Int             @default(0)
@@ -49,12 +53,14 @@ model AvailableTrigger {
   id       String    @id @default(cuid())
   name     String
   triggers Trigger[]
+  imageUrl String    @default("")
 }
 
 model AvailableAction {
-  id      String   @id @default(cuid())
-  name    String
-  actions Action[]
+  id       String   @id @default(cuid())
+  name     String
+  actions  Action[]
+  imageUrl String   @default("")
 }
 
 model ZapRun {

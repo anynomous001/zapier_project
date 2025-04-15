@@ -21,7 +21,6 @@ const ZapsTable = ({ zaps }: { zaps: Zap[] }) => {
                 <TableHeader>
                     <TableRow>
                         <TableHead className="w-[100px]">ZapId</TableHead>
-                        <TableHead>UserId</TableHead>
                         <TableHead>Trigger</TableHead>
                         <TableHead>Hook URL</TableHead>
                         <TableHead className="text-right">Action</TableHead>
@@ -32,9 +31,8 @@ const ZapsTable = ({ zaps }: { zaps: Zap[] }) => {
                         zaps.map((zap, index) => (
                             <TableRow key={index}>
                                 <TableCell className="font-medium">{zap.id}</TableCell>
-                                <TableCell>{zap.userId}</TableCell>
                                 <TableCell>{zap.trigger?.type.name || ''}</TableCell>
-                                <TableCell className='max-w-5xl text-wrap'>{`${BACKEND_URL}/hooks/catch/${zap.userId}/${zap.id}`}</TableCell>
+                                <TableCell className='max-w-5xl  text-wrap'>{`${BACKEND_URL}/hooks/catch/${zap.userId}/${zap.id}`}</TableCell>
                                 <TableCell className="text-right">{zap.actions.map((action, index) => {
                                     return (
                                         <div key={index}>

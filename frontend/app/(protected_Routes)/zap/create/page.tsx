@@ -2,6 +2,7 @@
 
 import { LinkButton } from '@/components/buttons/linkbutton'
 import { PrimaryButton } from '@/components/buttons/primarybutton'
+import { Input } from '@/components/input'
 import ZapCell from '@/components/zapCell'
 import { BACKEND_URL } from '@/config'
 import axios from 'axios'
@@ -13,6 +14,8 @@ interface availableActions {
     id: string
     name: string
     image: string
+    metadata: any;
+
 }[]
 interface availabletrigger {
     id: string
@@ -92,7 +95,7 @@ const page = () => {
                     triggerMetadata: {},
                     actions: selectedActions.map(a => ({
                         availableactionId: a.id,
-                        actionMetadata: {}
+                        actionMetadata: a.metadata
                     }))
 
 
@@ -113,7 +116,6 @@ const page = () => {
                     <ZapCell onClick={() => setSelectedModalIndex(1)} index={1} name={selecetdTrigger?.name || "Trigger"} image={selecetdTrigger?.image || ''} />
                     <div className='flex flex-col space-y-2'>
                         {
-
                             selectedActions.map((action, index) => {
                                 return (
                                     <ZapCell onClick={() => setSelectedModalIndex(action.index)} key={index} index={action.index} name={action.name} image={action?.image || ''} />
@@ -121,7 +123,9 @@ const page = () => {
                             })
                         }
                         <LinkButton onClick={() => {
-                            setSelectedActions(a => [...a, { index: selectedActions.length + 2, id: 'actionId', name: 'Action', image: '' }])
+                            setSelectedActions(a => [...a, {
+                                index: selectedActions.length + 2, id: 'actionId', name: 'Action', image: '', metadata: {}
+                            }])
                         }} >
                             Add Action
                         </LinkButton>
@@ -130,7 +134,7 @@ const page = () => {
 
                 </div>
 
-                {selectedModalIndex && <Modal loading={loading} availableItems={selectedModalIndex === 1 ? availableTriggers : availableActions} onSelect={(props: null | { name: string, id: string, image: string }) => {
+                {selectedModalIndex && <Modal loading={loading} availableItems={selectedModalIndex === 1 ? availableTriggers : availableActions} onSelect={(props: null | { name: string, id: string, image: string, metadata: any }) => {
                     if (props === null) {
                         setSelectedModalIndex(null)
                         return
@@ -141,7 +145,9 @@ const page = () => {
                     if (selectedModalIndex !== 1 && props !== null) {
                         setSelectedActions(a => {
                             const newActions = [...a]
-                            newActions[selectedModalIndex - 2] = { index: selectedModalIndex, name: props.name, id: props.id, image: props.image }
+                            newActions[selectedModalIndex - 2] = {
+                                index: selectedModalIndex, name: props.name, id: props.id, image: props.image, metadata: props.metadata
+                            }
                             return newActions
                         })
                     }
@@ -156,8 +162,19 @@ const page = () => {
 
 export default page
 
-const Modal = ({ index, onSelect, availableItems, loading }: { index: number, onSelect: (props: null | { name: string, id: string, image: string }) => void, loading: boolean, availableItems: { id: string, name: string, imageUrl: string }[] }) => {
+const Modal = ({ index, onSelect, availableItems, loading }: { index: number, onSelect: (props: null | { name: string, id: string, image: string, metadata: any }) => void, loading: boolean, availableItems: { id: string, name: string, imageUrl: string, metadata: any; }[] }) => {
     console.log(availableItems)
+
+    const [step, setStep] = React.useState(0)
+    const isTrigger = index == 1
+    const [selectedAction, setSelectedAction] = React.useState<{
+        id: string,
+        name: string,
+        image: string
+    }>()
+
+
+
 
     return (
         <div className=" overflow-y-auto flex bg-slate-200 bg-opacity-75   fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
@@ -177,28 +194,97 @@ const Modal = ({ index, onSelect, availableItems, loading }: { index: number, on
                         </button>
                     </div>
                     <div className='flex flex-col items-center justify-center p-6 space-y-4'>
-                        {
-                            loading ?
+
+                        {step === 1 && selectedAction?.id === "email" && <EmailSelector setMetadata={(metadata) => {
+                            onSelect({
+                                ...selectedAction,
+                                metadata
+                            })
+                        }} />}
+
+                        {(step === 1 && selectedAction?.id === "solana") && <SolanaSelector setMetadata={(metadata) => {
+                            onSelect({
+                                ...selectedAction,
+                                metadata
+                            })
+                        }} />}
+                        {step === 0 &&
+                            (loading ?
                                 <div className='flex justify-center items-center'>
                                     loading....
                                 </div>
-
-
                                 : availableItems.map((item, index) => {
                                     return (
-                                        <div key={index} onClick={() => onSelect({ name: item.name, id: item.id, image: item.imageUrl })} className='flex my-2 bg-slate-600 hover:cursor-pointer w-[200px] justify-center px-7 py-5 space-x-2 items-center'>
+                                        <div key={index} onClick={() => {
+                                            if (isTrigger) {
+                                                onSelect({ name: item.name, id: item.id, image: item.imageUrl, metadata: {} })
+                                            } else {
+                                                setStep(s => s + 1)
+                                                setSelectedAction({
+                                                    name: item.name,
+                                                    id: item.id,
+                                                    image: item.imageUrl
+                                                })
+                                            }
+                                        }}
+                                            className='flex my-2 bg-slate-600 hover:cursor-pointer w-[200px] justify-center px-7 py-5 space-x-2 items-center'>
                                             <img src={item.imageUrl} alt={item.name} className='w-[30px] h-[30px]' />
                                             <span className='text-xl text-slate-50 '>{item.name}</span>
                                         </div>
                                     )
                                 })
+                            )
                         }
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     )
 }
+
+function EmailSelector({ setMetadata }: {
+    setMetadata: (params: any) => void;
+}) {
+    const [email, setEmail] = React.useState("");
+    const [body, setBody] = React.useState("");
+
+    return <div>
+        <Input label={"To"} type={"text"} placeholder="To" onChange={(e: any) => setEmail(e.target.value)}></Input>
+        <Input label={"Body"} type={"text"} placeholder="Body" onChange={(e: any) => setBody(e.target.value)}></Input>
+        <div className="pt-2">
+            <PrimaryButton onClick={() => {
+                setMetadata({
+                    email,
+                    body
+                })
+            }}>Submit</PrimaryButton>
+        </div>
+    </div>
+}
+
+function SolanaSelector({ setMetadata }: {
+    setMetadata: (params: any) => void;
+}) {
+    const [amount, setAmount] = React.useState("");
+    const [address, setAddress] = React.useState("");
+
+    return <div>
+        <Input label={"To"} type={"text"} placeholder="To" onChange={(e) => setAddress(e.target.value)}></Input>
+        <Input label={"Amount"} type={"text"} placeholder="To" onChange={(e) => setAmount(e.target.value)}></Input>
+        <div className="pt-4">
+            <PrimaryButton onClick={() => {
+                setMetadata({
+                    amount,
+                    address
+                })
+            }}>Submit</PrimaryButton>
+        </div>
+    </div>
+}
+
+
+
+
 
 /**
  * 

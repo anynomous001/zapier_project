@@ -1,0 +1,1 @@
+{"root":["../prisma/seed.ts","../src/index.ts","../src/db/index.ts","../src/middleware/auth.ts","../src/router/actionsrouter.ts","../src/router/triggerrouter.ts","../src/router/userrouter.ts","../src/router/zaprouter.ts","../src/types/zapschema.ts","../src/types/zodschema.ts"],"version":"5.8.2"}
